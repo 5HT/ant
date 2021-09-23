@@ -48,7 +48,7 @@ Tables.c: Tables.c.top Tables.c.bot GenUnicodeTable
       exit 1
 
 Tables.o: Tables.c
-  $(OCAMLC) -c -o $@ $^
+  ocamlc -o $@ $^
   mv Tables.o $@  # BUG: ocaml creates the object file in the current directory
 
 # vim:set ft=make:

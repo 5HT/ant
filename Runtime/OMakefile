@@ -66,11 +66,11 @@ section
 OCamlLibraryCopy(Runtime-install, $(ROOT)/lib, Runtime, Runtime)
 
 kpathsea-stubs.o: kpathsea-stubs.c
-	$(OCAMLC) -c $(KPATHSEA_CFLAGS) $(SELFAUTO_FLAGS) -o $@ $^
+	ocamlc -output-obj -I /usr/include/freetype2 -I /usr/include/freetype2/freetype $(KPATHSEA_CFLAGS) $(SELFAUTO_FLAGS) -o $@ $^
 	mv kpathsea-stubs.o $@  # BUG: ocaml creates the object file in the current directory
 
 freetype-stubs.o: freetype-stubs.c
-	$(OCAMLC) -c $(FREETYPE_FLAGS) -o $@ $^
+	ocamlc -output-obj -I /usr/include/freetype2 -I /usr/include/freetype2/freetype $(FREETYPE_FLAGS) -o $@ $^
 	mv freetype-stubs.o $@  # BUG: ocaml creates the object file in the current directory
 
 # vim:set ft=make:

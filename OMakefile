@@ -25,7 +25,7 @@ SELFAUTOPARENT = $(shell kpsewhich '--expand-var=$$SELFAUTOPARENT')
 
 # Compile flags for C files:
 KPATHSEA_LFLAGS = -cclib -L$(SELFAUTOPARENT)/lib
-KPATHSEA_CFLAGS = -ccopt -I$(SELFAUTOPARENT)/include
+KPATHSEA_CFLAGS = -ccopt -I/usr/include/freetype2
 SELFAUTO_FLAGS  = -ccopt $""-DSELFAUTOLOC='"$(SELFAUTOLOC)"' "" \
                   -ccopt $""-DSELFAUTODIR='"$(SELFAUTODIR)"' "" \
                   -ccopt $""-DSELFAUTOPARENT='"$(SELFAUTOPARENT)"' ""
@@ -62,6 +62,7 @@ OCAMLDEPFLAGS_WITHOUT_CAMLP = $(OCAMLDEPFLAGS) -I $(ROOT)/Tools -I $(ROOT)/lib
 OCAMLFLAGS                  = $(OCAMLFLAGS_WITHOUT_CAMLP)    $(PP_FLAGS)
 OCAMLDEPFLAGS               = $(OCAMLDEPFLAGS_WITHOUT_CAMLP) $(PP_FLAGS)
 
+
 INSTALL_INTERFACES          = true
 
 switch $(MATH_LIB)
@@ -76,13 +77,15 @@ default
   export
 
 CAMLIMAGES_DIR     = $(shell ocamlfind query camlimages)
+ZLIB_DIR     = $(shell ocamlfind query zlib)
 CAMLIMAGES_CLIBS   = -ljpeg -lfreetype -lpng
-# CAMLIMAGES_MLLIBS  = $(addprefix -I $(CAMLIMAGES_DIR)/, core freetype gif jpeg tiff png xpm exif)
+CAMLIMAGES_MLLIBS  = $(addprefix $(CAMLIMAGES_DIR), core)
 
-OCAML_OTHER_LIBS = $(NUMLIB) unix
+OCAMLFLAGS += -I $(CAMLIMAGES_DIR)/core -I $(ZLIB_DIR)
+
+OCAML_OTHER_LIBS = $(NUMLIB) unix camlimages zlib
 OCAML_LINK_FLAGS = $(KPATHSEA_LFLAGS) $(X11_LFLAGS)
 OCAML_LIB_FLAGS  = $(mapprefix -cclib, -lkpathsea -lfreetype -lz $(CAMLIMAGES_CLIBS) -lstdc++)
-
 
 DIRECTORIES[]    = Tools Images Unicode Runtime VM Util Typesetting Engine Markup Packages Main Examples
 
