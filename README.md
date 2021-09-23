@@ -9,8 +9,9 @@ features for typesetting. For more information read the [MANUAL.PDF](https://git
 * TeX syntax
 * Unicode support
 * Font Support: Type1, TrueType, and OpenType
-* Color and Graphics
 * Simple Page Layout Specifications
+* Color and Graphics
+* Hyphenation System
 * ML-like typesetting language
 
 ## Building
