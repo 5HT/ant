@@ -1,0 +1,13 @@
+Makefile linguist-detectable=false
+*.mll linguist-language=OCaml
+*.mly linguist-language=OCaml
+*.ml linguist-language=OCaml
+*.c linguist-detectable=false
+*.om linguist-detectable=false
+*.sh linguist-detectable=false
+*.ant linguist-detectable=false
+*.al linguist-detectable=false
+*.sty linguist-detectable=false
+*.hyphen linguist-detectable=false
+OMakefile linguist-detectable=false
+OMakeroot linguist-detectable=false
