@@ -17,10 +17,14 @@ For more information please take a look at the [MANUAL.PDF](https://github.com/5
 ## Building
 
 ```sh
-opam switch install 4.11.2
-opam install ocamlfind
-opam install omake
-opam install camlimages
+$ opam switch install 4.11.2
+$ opam install ocamlfind
+$ opam install omake
+$ opam install camlimages
+```
+
+```sh
+$ omake
 ```
 
 ## Credits
