@@ -17,10 +17,7 @@ features for typesetting. For more information read the [MANUAL.PDF](https://git
 
 ```sh
 $ opam switch install 4.11.2
-$ opam install ocamlfind
-$ opam install omake
-$ opam install zlib
-$ opam install camlimages
+$ opam install ocamlfind omake zlib camlimages
 ```
 
 ```sh
