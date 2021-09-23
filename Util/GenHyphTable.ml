@@ -381,7 +381,7 @@ value output_table (trie, tables) = do
   print_endline "open Hyphenation;";
   print_endline "value main_trie =";
   dump_trie trie print_int;
-  print_endline ";";
+  print_endline "";
   print_endline "value empty_map =";
   print_array print_int False (Array.make 256 0);
   print_endline ";";
