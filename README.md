@@ -1,6 +1,6 @@
-# AnT
+# Ant
 
-AnT is a new typesetting system written by Achim Blumensath.
+Ant is a new typesetting system written by Achim Blumensath.
 It resembles TeX, but improves on the language. It contains ML-like
 programming language that has domain-specific features for typesetting.
 
