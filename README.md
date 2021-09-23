@@ -3,6 +3,7 @@
 Ant is a new typesetting system written by Achim Blumensath.
 It resembles TeX, but improves on the language. It contains ML-like
 programming language that has domain-specific features for typesetting.
+For more information please take a look at the [MANUAL.PDF](https://github.com/5HT/ant/blob/master/manual.pdf)
 
 ## Features
 
@@ -11,8 +12,6 @@ programming language that has domain-specific features for typesetting.
 * partial support for advanced OpenType features;
 * support for colour and graphics;
 * simple page layout specifications;
-
-For more information please take a look at the [MANUAL.PDF](https://github.com/5HT/ant/blob/master/manual.pdf)
 
 ## Building
 
