@@ -12,7 +12,7 @@ programming language that has domain-specific features for typesetting.
 * support for colour and graphics;
 * simple page layout specifications;
 
-For more information please take a look at the [Manual](https://github.com/5HT/ant/blob/master/manual.pdf)
+For more information please take a look at the [MANUAL.PDF](https://github.com/5HT/ant/blob/master/manual.pdf)
 
 ## Building
 
