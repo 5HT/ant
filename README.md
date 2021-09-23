@@ -1,0 +1,30 @@
+# ANT
+
+ANT is a new typesetting system written by Achim Blumensath.
+It resembles TeX, but improves on the language. It contains ML-like
+programming language that has domain-specific features for typesetting.
+
+## Features
+
+* Unicode support;
+* support for various font formats including Type1, TrueType, and OpenType;
+* partial support for advanced OpenType features;
+* support for colour and graphics;
+* simple page layout specifications;
+
+For more information please take a look at the [Manual](https://github.com/5HT/ant/blob/master/manual.pdf)
+
+## Building
+
+```sh
+opam switch install 4.11.2
+opam install ocamlfind
+opam install omake
+opam install camlimages
+```
+
+## Credits
+
+* Achim Blumensath (author)
+* Gabriel Scherer
+* Maxim Sokhatsky
