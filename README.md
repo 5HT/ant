@@ -6,11 +6,12 @@ features for typesetting. For more information read the [MANUAL.PDF](https://git
 
 ## Features
 
-* Unicode support;
-* support for various font formats including Type1, TrueType, and OpenType;
-* partial support for advanced OpenType features;
-* support for colour and graphics;
-* simple page layout specifications;
+* TeX syntax
+* Unicode support
+* Font Support: Type1, TrueType, and OpenType
+* Color and Graphics
+* Simple Page Layout Specifications
+* ML-like typesetting language
 
 ## Building
 
