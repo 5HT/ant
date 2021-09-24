@@ -24,14 +24,12 @@ SELFAUTODIR    = $(shell kpsewhich '--expand-var=$$SELFAUTODIR')
 SELFAUTOPARENT = $(shell kpsewhich '--expand-var=$$SELFAUTOPARENT')
 
 # Compile flags for C files:
+X11_LFLAGS      = -cclib -L/usr/X11/lib
 KPATHSEA_LFLAGS = -cclib -L$(SELFAUTOPARENT)/lib
 KPATHSEA_CFLAGS = -ccopt -I/usr/include/freetype2
 SELFAUTO_FLAGS  = -ccopt $""-DSELFAUTOLOC='"$(SELFAUTOLOC)"' "" \
                   -ccopt $""-DSELFAUTODIR='"$(SELFAUTODIR)"' "" \
                   -ccopt $""-DSELFAUTOPARENT='"$(SELFAUTOPARENT)"' ""
-#FREETYPE_FLAGS  = $(mapprefix -ccopt, $(shell freetype-config --cflags))
-FREETYPE_FLAGS  = ""
-X11_LFLAGS      = -cclib -L/usr/X11/lib
 
 if $(NATIVE_ENABLED)
   CMO = cmx

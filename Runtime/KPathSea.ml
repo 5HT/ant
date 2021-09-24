@@ -31,6 +31,9 @@ value init progname dpi mode = do
   init_prog "ANT" dpi mode "cmr10";
   set_program_enabled pk_format  1 1;
   set_program_enabled tfm_format 1 1;
+  set_program_enabled truetype_format 1 1;
+  set_program_enabled opentype_format 1 1;
+  set_program_enabled type1_format 1 1;
   set_program_enabled tex_format 0 1
 };
 

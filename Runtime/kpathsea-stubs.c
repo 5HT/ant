@@ -28,6 +28,12 @@ CAMLprim value kpse_set_program_name_wrapper(value argv0, value progname)
   putenv("SELFAUTODIR="     SELFAUTODIR);
   putenv("SELFAUTOPARENT="  SELFAUTOPARENT);
 
+/*
+  putenv("SELFAUTOLOC="     "/usr/share");
+  putenv("SELFAUTODIR="     "/usr");
+  putenv("SELFAUTOPARENT="  ".");
+*/
+
   CAMLreturn(Val_unit);
 }
 
