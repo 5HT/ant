@@ -24,9 +24,9 @@ CAMLprim value kpse_set_program_name_wrapper(value argv0, value progname)
 
   kpse_set_program_name(String_val(argv0), String_val(progname));
 
-  putenv("SELFAUTOLOC="     "SELFAUTOLOC");
-  putenv("SELFAUTODIR="     "SELFAUTODIR");
-  putenv("SELFAUTOPARENT="  "SELFAUTOPARENT");
+  putenv("SELFAUTOLOC="     SELFAUTOLOC);
+  putenv("SELFAUTODIR="     SELFAUTODIR);
+  putenv("SELFAUTOPARENT="  SELFAUTOPARENT);
 
   CAMLreturn(Val_unit);
 }
