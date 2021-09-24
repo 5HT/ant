@@ -22,6 +22,9 @@ $ opam install ocamlfind omake zlib camlimages
 ```
 
 ```sh
+$ omake Runtime/freetype-stubs.o
+$ omake Runtime/kpathsea-stubs.o
+$ omake Unicode/Tables.o
 $ omake
 ```
 
