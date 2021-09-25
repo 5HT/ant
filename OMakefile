@@ -65,7 +65,7 @@ INSTALL_INTERFACES          = true
 
 switch $(MATH_LIB)
 case Gmp
-  NUMLIB = gmp/gmp
+  NUMLIB = gmp
   export
 case Num
   NUMLIB = nums
@@ -75,11 +75,13 @@ default
   export
 
 CAMLIMAGES_DIR     = $(shell ocamlfind query camlimages)
-ZLIB_DIR     = $(shell ocamlfind query zlib)
+ZLIB_DIR           = $(shell ocamlfind query zlib)
+GMP_DIR            = $(shell ocamlfind query gmp)
 CAMLIMAGES_CLIBS   = -ljpeg -lfreetype -lpng
 CAMLIMAGES_MLLIBS  = $(addprefix $(CAMLIMAGES_DIR), core)
 
 OCAMLFLAGS += -I $(CAMLIMAGES_DIR)/core -I $(ZLIB_DIR)
+OCAMLFLAGS += -I $(GMP_DIR)
 
 OCAML_OTHER_LIBS = $(NUMLIB) unix camlimages zlib
 OCAML_LINK_FLAGS = $(KPATHSEA_LFLAGS) $(X11_LFLAGS)

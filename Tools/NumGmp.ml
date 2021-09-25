@@ -5,8 +5,8 @@ open Gmp;
 
 type num = Q.t;
 
-value num_of_int  x   = Q.from_ints x 1;
-value num_of_ints x y = Q.from_ints x y;
+value num_of_int  x   = Q.make_int x 1;
+value num_of_ints x y = Q.make_int x y;
 value float_of_num    = Q.to_float;
 value string_of_num   = Q.to_string;
 
@@ -17,41 +17,44 @@ value num_two       = num_of_int 2;
 value num_three     = num_of_int 3;
 value num_ten       = num_of_int 10;
 
+value sgn x = Q.compare x Q.zero;
+value equal_int x y = Z.compare_int x y = 0;
+
 value add_num     = Q.add;
 value minus_num   = Q.neg;
 value sub_num     = Q.sub;
 value mult_num    = Q.mul;
 value div_num     = Q.div;
-value sign_num    = Q.sgn;
+value sign_num    = sgn;
 value compare_num = Q.compare;
 
 value square_num x = mult_num x x;
 
-value is_integer_num x = Z.equal_int (Q.get_den x) 1;
+value is_integer_num x = equal_int (Q.den x) 1;
 
 value power_num_int x exp = do
 {
   if exp = 0 then
     num_one
   else if exp > 0 then
-    Q.from_zs (Z.pow_ui (Q.get_num x) exp)
-              (Z.pow_ui (Q.get_den x) exp)
+    Q.make_z (Z.pow_int (Q.num x) exp)
+              (Z.pow_int (Q.den x) exp)
   else
-    Q.from_zs (Z.pow_ui (Q.get_den x) (~-exp))
-              (Z.pow_ui (Q.get_num x) (~-exp))
+    Q.make_z (Z.pow_int (Q.den x) (~-exp))
+              (Z.pow_int (Q.num x) (~-exp))
 };
 
 value power_num x y = do
 {
   if is_integer_num y then
-    power_num_int x (Z.to_int (Q.get_num y))
+    power_num_int x (Z.to_int (Q.num y))
   else
     invalid_arg "power_num"
 };
 
 value abs_num x = do
 {
-  match Q.sgn x with
+  match sgn x with
   [ (-1) -> Q.neg x
   | _    -> x
   ]
@@ -63,54 +66,57 @@ value pred_num x = Q.sub x num_one;
 value incr_num x = !x := succ_num !x;
 value decr_num x = !x := pred_num !x;
 
-value floor_num   x = Q.from_z (Z.fdiv_q (Q.get_num x) (Q.get_den x));
-value ceiling_num x = Q.from_z (Z.cdiv_q (Q.get_num x) (Q.get_den x));
+value fdiv_q x y = fst (Gmp.Z.fdiv x y);
+value cdiv_q x y = fst (Gmp.Z.cdiv x y);
+
+value floor_num   x = Q.of_z (fdiv_q (Q.num x) (Q.den x));
+value ceiling_num x = Q.of_z (cdiv_q (Q.num x) (Q.den x));
 
 value integer_num x = do
 {
-  let n = Q.get_num x;
-  let d = Q.get_den x;
+  let n = Q.num x;
+  let d = Q.den x;
 
-  let (q,r) = Z.tdiv_qr n d;
+  let (q,r) = Z.tdiv n d;
 
-  if Z.cmp_si n 0 < 0 then
+  if Z.compare_int n 0 < 0 then
     if Z.add d r < r then
-      Q.from_z (Z.sub_ui q 1)
+      Q.of_z (Z.sub_int q 1)
     else
-      Q.from_z q
+      Q.of_z q
   else
     if Z.sub d r < r then
-      Q.from_z (Z.add_ui q 1)
+      Q.of_z (Z.add_int q 1)
     else
-      Q.from_z q
+      Q.of_z q
 };
 value round_num x = do
 {
-  let n = Q.get_num x;
-  let d = Q.get_den x;
+  let n = Q.num x;
+  let d = Q.den x;
 
-  let (q,r) = Z.tdiv_qr n d;
+  let (q,r) = Z.tdiv n d;
 
-  if Z.cmp_si n 0 < 0 then
+  if Z.compare_int n 0 < 0 then
     if Z.add d r <= r then
-      Q.from_z (Z.sub_ui q 1)
+      Q.of_z (Z.sub_int q 1)
     else
-      Q.from_z q
+      Q.of_z q
   else
     if Z.sub d r <= r then
-      Q.from_z (Z.add_ui q 1)
+      Q.of_z (Z.add_int q 1)
     else
-      Q.from_z q
+      Q.of_z q
 };
 
 value quo_num x y = floor_num (div_num x y);
 value mod_num x y = sub_num x (mult_num y (quo_num x y));
 
-value eq_num x y = (Q.cmp x y) =  0;
-value lt_num x y = (Q.cmp x y) <  0;
-value le_num x y = (Q.cmp x y) <= 0;
-value gt_num x y = (Q.cmp x y) >  0;
-value ge_num x y = (Q.cmp x y) >= 0;
+value eq_num x y = (Q.compare x y) =  0;
+value lt_num x y = (Q.compare x y) <  0;
+value le_num x y = (Q.compare x y) <= 0;
+value gt_num x y = (Q.compare x y) >  0;
+value ge_num x y = (Q.compare x y) >= 0;
 
 value max_num x y = do
 {
@@ -124,7 +130,7 @@ value min_num x y = do
 value land_num x y = do
 {
   if is_integer_num x && is_integer_num y then
-    Q.from_z (Z.band (Q.get_num x) (Q.get_num y))
+    Q.of_z (Z.logand (Q.num x) (Q.num y))
   else
     invalid_arg "land_num"
 };
@@ -132,7 +138,7 @@ value land_num x y = do
 value lor_num x y = do
 {
   if is_integer_num x && is_integer_num y then
-    Q.from_z (Z.bior (Q.get_num x) (Q.get_num y))
+    Q.of_z (Z.logor (Q.num x) (Q.num y))
   else
     invalid_arg "lor_num"
 };
@@ -140,7 +146,7 @@ value lor_num x y = do
 value lxor_num x y = do
 {
   if is_integer_num x && is_integer_num y then
-    Q.from_z (Z.bxor (Q.get_num x) (Q.get_num y))
+    Q.of_z (Z.logxor (Q.num x) (Q.num y))
   else
     invalid_arg "lxor_num"
 };
@@ -148,7 +154,7 @@ value lxor_num x y = do
 value lneg_num x = do
 {
   if is_integer_num x then
-    Q.from_z (Z.bcom (Q.get_num x))
+    Q.of_z (Z.lognot (Q.num x))
   else
     invalid_arg "lneg_num"
 };
@@ -158,16 +164,16 @@ value num_of_string s = do
   try
     let n = String.index s '/';
 
-    Q.from_zs (Z.from_string (String.sub s 0 n))
-              (Z.from_string (String.sub s (n+1) (String.length s - n - 1)))
+    Q.make_z (Z.of_string (String.sub s 0 n))
+             (Z.of_string (String.sub s (n+1) (String.length s - n - 1)))
   with
-  [ Not_found -> Q.from_z (Z.from_string s) ]
+  [ Not_found -> Q.of_z (Z.of_string s) ]
 };
 
 value int_of_num x = do
 {
   if is_integer_num x then
-    Z.to_int (Q.get_num x)
+    Z.to_int (Q.num x)
   else
     failwith "integer argument required"
 };
@@ -203,14 +209,14 @@ value num_of_float x = do
 
 value serialise_num os x = do
 {
-  let n = Q.get_num x;
-  let d = Q.get_den x;
+  let n = Q.num x;
+  let d = Q.den x;
 
-  let s1 = Z.to_string_base 16 n;
-  let s2 = Z.to_string_base 16 d;
+  let s1 = Z.of_based_string 16 (Z.to_string n);
+  let s2 = Z.of_based_string 16 (Z.to_string d);
 
-  let l1 = String.length s1;
-  let l2 = String.length s2;
+  let l1 = String.length (Z.to_string s1);
+  let l2 = String.length (Z.to_string s2);
 
   let b10 = l1          land 0xff;
   let b11 = (l1 lsr  8) land 0xff;
@@ -229,8 +235,8 @@ value serialise_num os x = do
   IO_Base.io_write_char os (char_of_int b22);
   IO_Base.io_write_char os (char_of_int b21);
   IO_Base.io_write_char os (char_of_int b20);
-  IO_Base.io_write_string os s1;
-  IO_Base.io_write_string os s2;
+  IO_Base.io_write_string os (Z.to_string s1);
+  IO_Base.io_write_string os (Z.to_string s2);
 };
 
 value unserialise_num is = do
@@ -250,9 +256,9 @@ value unserialise_num is = do
   let s1 = IO_Base.io_read_string is len1;
   let s2 = IO_Base.io_read_string is len2;
 
-  let d = Z.from_string_base 16 s1;
-  let n = Z.from_string_base 16 s2;
+  let d = Z.of_based_string 16 s1;
+  let n = Z.of_based_string 16 s2;
 
-  Q.from_zs d n
+  Q.make_z d n
 };
 

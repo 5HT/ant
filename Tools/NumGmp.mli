@@ -1,7 +1,9 @@
 
 (* stub to replace Num by Gmp *)
 
-type num = 'a;
+open Gmp;
+
+type num = Q.t;
 
 value num_zero      : num;
 value num_one       : num;

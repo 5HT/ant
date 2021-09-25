@@ -5,7 +5,6 @@ UTILS[] = GenHyphTable #Kerning
 
 OCamlDependsOnLibrary($(ROOT)/lib/Unicode)
 OCamlDependsOnLibrary($(ROOT)/lib/Runtime)
-#OCamlDependsOnPackage($(ROOT)/lib/CamlImages)
 
 CAMLIMAGES_DIR     = $(shell ocamlfind query camlimages)
 CAMLIMAGES_CLIBS   = -ljpeg -lfreetype -lpng
@@ -15,7 +14,6 @@ OCAMLFLAGS += -I $(CAMLIMAGES_DIR)/core
 
 section
   OCAML_LIBS = $(ROOT)/Tools/Tools $(ROOT)/lib/Unicode $(ROOT)/lib/Runtime
-#  OCAML_OTHER_LIBS = $(CAMLIMAGES_DIR)
 
   OCamlProgram(GenHyphTable, GenHyphTable)
 
