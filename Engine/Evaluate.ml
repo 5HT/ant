@@ -558,24 +558,23 @@ and ev_shipout_pages env _builder loc even odd number = do
     let even_layout = DynUCTrie.find_string even (PTable.table (page_layout_table e));
 
     try
+
       let odd_layout  = DynUCTrie.find_string odd (PTable.table (page_layout_table e));
-      let abort       = if number <= 0 then
-                          PageLayout.abort_when_done
-                        else
-                          PageLayout.abort_on_page (current_page_number e + number);
+      let abort       = if number <= 0 then PageLayout.abort_when_done else PageLayout.abort_on_page (current_page_number e + number);
+
       let (pages, rs) = PageLayout.layout_run_of_pages
-                          (PageLayout.layout_two_sided even_layout odd_layout)
-                          abort
+                          (PageLayout.layout_two_sided even_layout odd_layout) abort
                           (PageLayout.new_page_run_state
                             (current_page_number e)
                             (current_float_misplacement_demerits e)
                             (PTable.table (galley_table e))
                             (PTable.table (page_layout_table e)));
-      add_pages
-        (PageLayout.page_no rs)
-        pages
-        loc
-        (set_galley_table e (PTable.update (galley_table e) (PageLayout.get_galley_table rs)))
+
+      let x = add_pages (PageLayout.page_no rs) pages loc (set_galley_table e (PTable.update (galley_table e) (PageLayout.get_galley_table rs)));
+
+      log_string "\n#E: pages added.";
+
+      x
     with
     [ Not_found -> do
       {

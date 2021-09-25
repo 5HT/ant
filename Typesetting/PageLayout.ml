@@ -438,15 +438,7 @@ value break_page layout run_state = do
       let num_old_floats = List.length run_state.rs_floats;
       let floats         = collect_floats run_state s;
 
-      (* FIX: collect also floats referenced in <floats> *)
-
-      (* FIX: layout a float page *)
-
-      build_page run_state
-        (choose_best_layout run_state.rs_float_misplacement_demerits num_old_floats
-          (iter 1 [(p,s,0)] [] floats))
-
-      where rec iter num_floats results floats_on_page remaining_floats = match remaining_floats with
+      let rec iter num_floats results floats_on_page remaining_floats = match remaining_floats with
       [ []      -> results
       | [f::fs] -> do
         {
@@ -478,7 +470,20 @@ value break_page layout run_state = do
             }
           ]
         }
-      ]
+      ];
+
+      (* FIX: collect also floats referenced in <floats> *)
+
+      (* FIX: layout a float page *)
+
+      let x = build_page run_state
+        (choose_best_layout run_state.rs_float_misplacement_demerits num_old_floats
+          (iter 1 [(p,s,0)] [] floats));
+
+      let _ = log_string "\n#P: Page built.";
+
+      x
+
     }
   ]
 };

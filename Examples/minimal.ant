@@ -1,120 +1,25 @@
 
 \ALcommand{
   local begin
-      fam := "MinionPro";
+      mpr := "MinionPro";
+      cmmx := "Computer Modern";
       med := "medium";
       nor := "normal";
-      rm_kern := [(   2, ~0.020, ~0.050),  ;; !
-                (   8, ~0.100, ~0.150),  ;; '
-                (  65, ~0.150, ~0.100),  ;; `
-                (   9, ~0.020, ~0.010),  ;; (
-                (  10, ~0.010, ~0.020),  ;; )
-                (  60, ~0.035, ~0.055),  ;; [
-                (  62, ~0.055, ~0.035),  ;; ]
-                (  13, ~0.100, ~0.160),  ;; ,
-                (  14, ~0.250, ~0.250),  ;; -
-                (  15, ~0.150, ~0.160),  ;; .
-                (  27, ~0.090, ~0.110),  ;; :
-                (  28, ~0.080, ~0.100),  ;; ;
-                ( 117, ~0.160, ~0.160),  ;; quote single base
-                ( 107, ~0.140, ~0.100),  ;; guillemot single left
-                ( 108, ~0.100, ~0.140),  ;; guillemot single right
-                ( 105, ~0.150, ~0.100),  ;; quote double left
-                ( 119, ~0.100, ~0.150),  ;; qoute double right
-                ( 118, ~0.160, ~0.160),  ;; qoute double base
-                ( 106, ~0.140, ~0.100),  ;; guillemot left
-                ( 120, ~0.100, ~0.140),  ;; guillemot right
-                ( 111, ~0.200, ~0.250),  ;; en-dash
-                ( 137, ~0.200, ~0.250),  ;; em-dash
-                (  34, ~0.030, ~0.030),  ;; A
-                ( 171, ~0.030, ~0.030),  ;; Aacute
-                ( 172, ~0.030, ~0.030),  ;; Acircumflex
-                ( 173, ~0.030, ~0.030),  ;; Adieresis
-                ( 174, ~0.030, ~0.030),  ;; Agrave
-                ( 175, ~0.030, ~0.030),  ;; Aring
-                ( 176, ~0.030, ~0.030),  ;; Atilde
-                ( 379, ~0.030, ~0.030),  ;; Abreve
-                ( 380, ~0.030, ~0.030),  ;; Amacron
-                ( 381, ~0.030, ~0.030),  ;; Aogonec
-                ( 138, ~0.030, ~0.000),  ;; AE
-                ( 382, ~0.030, ~0.000),  ;; AEacute
-                (  39, ~0.000, ~0.030),  ;; F
-                (  43, ~0.030, ~0.000),  ;; J
-                (  44, ~0.000, ~0.030),  ;; K
-                (  45, ~0.000, ~0.030),  ;; L
-                ( 408, ~0.000, ~0.030),  ;; Lacute
-                ( 409, ~0.000, ~0.030),  ;; Lcaron
-                ( 410, ~0.000, ~0.030),  ;; Lcommaaccent
-                ( 411, ~0.000, ~0.030),  ;; Ldot
-                (  53, ~0.030, ~0.030),  ;; T
-                ( 426, ~0.030, ~0.030),  ;; Tbar
-                ( 427, ~0.030, ~0.030),  ;; Tcaron
-                ( 428, ~0.030, ~0.030),  ;; Tcommaaccent
-                (1029, ~0.030, ~0.000),  ;; Th
-                (  55, ~0.030, ~0.030),  ;; V
-                (  56, ~0.030, ~0.030),  ;; W
-                ( 435, ~0.030, ~0.030),  ;; Wacute
-                ( 436, ~0.030, ~0.030),  ;; Wcircumflex
-                ( 437, ~0.030, ~0.030),  ;; Wdieresis
-                ( 438, ~0.030, ~0.030),  ;; Wgrave
-                (  57, ~0.030, ~0.030),  ;; X
-                (  58, ~0.030, ~0.030),  ;; Y
-                ( 197, ~0.030, ~0.030),  ;; Yacute
-                ( 198, ~0.030, ~0.030),  ;; Ydieresis
-                ( 439, ~0.030, ~0.030),  ;; Ycircumflex
-                ( 440, ~0.030, ~0.030),  ;; Ygrave
-                (  76, ~0.000, ~0.030),  ;; k
-                ( 472, ~0.000, ~0.030),  ;; kcommaaccent
-                (1014, ~0.000, ~0.030),  ;; ck
-                (1020, ~0.000, ~0.030),  ;; ffk
-                (1025, ~0.000, ~0.030),  ;; fk
-                (  83, ~0.000, ~0.030),  ;; r
-                ( 484, ~0.000, ~0.030),  ;; racute
-                ( 485, ~0.000, ~0.030),  ;; rcircumflex
-                ( 486, ~0.000, ~0.030),  ;; rcommaaccent
-                (  85, ~0.000, ~0.030),  ;; t
-                ( 491, ~0.000, ~0.030),  ;; tbar
-                ( 493, ~0.000, ~0.030),  ;; tcommaaccent
-                (1021, ~0.000, ~0.030),  ;; fft
-                (1026, ~0.000, ~0.030),  ;; ft
-                (  87, ~0.030, ~0.030),  ;; v
-                (  88, ~0.030, ~0.030),  ;; w
-                ( 500, ~0.030, ~0.030),  ;; wacute
-                ( 501, ~0.030, ~0.030),  ;; wcircumflex
-                ( 502, ~0.030, ~0.030),  ;; wdieresis
-                ( 503, ~0.030, ~0.030),  ;; wgrave
-                (  89, ~0.030, ~0.030),  ;; x
-                (  90, ~0.030, ~0.030),  ;; y
-                ( 226, ~0.030, ~0.030),  ;; yacute
-                ( 227, ~0.030, ~0.030),  ;; ydieresis
-                ( 504, ~0.030, ~0.030),  ;; ycircumflex
-                ( 505, ~0.030, ~0.030)]; ;; ygrave
-
   end
   do
-    ps_declare_font "MinionPro-Regular.otf" fam med nor ( 8.5, 13.1) { BorderKern := rm_kern };
-
-    ;; define a page layout
-
+    ps_declare_font "cmex10.tfm" cmmx "" "" (10, 11) {};
+    ps_declare_font "MinionPro-Regular.otf" mpr med  nor ( 8.5, 13.1) {};
     ps_new_page_layout "A4" 210mm 297mm;
-    ps_new_area "main area"
-      (1/9*210mm) (1/9*297mm+10pt)
-      (7/9*210mm) (7/9*210mm)
-      10pt 3pt
-      Galley { Name := "main galley" };
+    ps_new_area "main area" (1/9*210mm) (1/9*297mm+10pt) (7/9*210mm) (7/9*210mm) 10pt 3pt Galley { Name := "main galley" };
     ps_new_galley "main galley" (7/9*210mm);
   end
 }
 
-% use the font
-\setparameter{font}{ family = {MinionPro}; series = medium; shape = normal }
+\setparameter{font}{ family = {Computer Modern} }
 
-% content
 \begingalley{main galley}
 The quick brown fox jumps over the lazy dog.
 \endgalley
 
-% write the output
 \shipoutpages{A4}{A4}
 
-% vim:set ft=tex fenc=utf8:

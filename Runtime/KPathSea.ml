@@ -1,6 +1,8 @@
 
 (* Interface to the kpathsea library. *)
 
+open Logging;
+
 type file_type =
 [= `PK
 |  `Source
@@ -28,24 +30,31 @@ external kpse_find_glyph     : string -> int -> int -> string            = "kpse
 value init progname dpi mode = do
 {
   set_program_name progname "ant";
+  log_string "\n#E: kpathsea init: ";
+  log_int dpi;
+  log_string ".";
   init_prog "ANT" dpi mode "cmr10";
   set_program_enabled pk_format  1 1;
   set_program_enabled tfm_format 1 1;
   set_program_enabled truetype_format 1 1;
   set_program_enabled opentype_format 1 1;
   set_program_enabled type1_format 1 1;
-  set_program_enabled tex_format 0 1
+  set_program_enabled tex_format 1 1
 };
 
-value find_file name file_type must_exists = match file_type with
-[ `PK       -> kpse_find_file name pk_format       must_exists
-| `TFM      -> kpse_find_file name tfm_format      must_exists
-| `TeX      -> kpse_find_file name tex_format      must_exists
-| `Type1    -> kpse_find_file name type1_format    must_exists
-| `TrueType -> kpse_find_file name truetype_format must_exists
-| `OpenType -> kpse_find_file name opentype_format must_exists
-| _         -> name
-];
+value find_file name file_type must_exists = do
+{
+  log_string "\n#E: kpathsea find TFM";
+  match file_type with
+  [ `PK       -> kpse_find_file name pk_format       must_exists
+  | `TFM      -> kpse_find_file name tfm_format      must_exists
+  | `TeX      -> kpse_find_file name tex_format      must_exists
+  | `Type1    -> kpse_find_file name type1_format    must_exists
+  | `TrueType -> kpse_find_file name truetype_format must_exists
+  | `OpenType -> kpse_find_file name opentype_format must_exists
+  | _         -> name
+  ];
+};
 
 value find_glyph name dpi = kpse_find_glyph name dpi pk_format;
 
