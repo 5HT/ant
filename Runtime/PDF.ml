@@ -1,4 +1,5 @@
 
+open Logging;
 open XNum;
 
 type pdf_value =
@@ -1317,18 +1318,16 @@ and write_dictionary os dict = do
 }
 and write_stream os dict (str : IO.irstream) = do
 {
+  log_string "\n#E: 1";
   IO.seek str 0;
-
+  log_string "\n#E: 2";
   let compress = IO.size str > 256;
-  let data     = if compress then
-                   IO.compress str 9
-                 else
-                   str;
+  log_string "\n#E: 2.5";
+  let data     = if compress then IO.compress str 0 else str;
+  log_string "\n#E: 3";
   let len      = IO.size data;
-
-  iter [] dict
-
-  where rec iter result dict = match dict with
+  log_string "\n#E: 4";
+  let rec iter result dict = match dict with
   [ [] -> do
     {
       write_dictionary os
@@ -1347,6 +1346,13 @@ and write_stream os dict (str : IO.irstream) = do
         iter [(k, v) :: result] kvs
      }
   ];
+
+  log_string "\n#E: write_stream...";
+  log_int len;
+
+  iter [] dict;
+
+  log_string "done.";
 
   IO.write_string os "stream\n";
 
@@ -1376,7 +1382,10 @@ value write_object os id rev val = do
 
   IO.write_string os "obj ";
   write_value os val;
-  IO.write_string os "endobj\n"
+  IO.write_string os "endobj\n";
+
+  log_string "\n#E: PDF.write_object"
+
 };
 
 value set_object pdf id val = do
@@ -1385,6 +1394,8 @@ value set_object pdf id val = do
 
   pdf.revs.(id)  := new_rev;
   pdf.xrefs.(id) := IO.bytes_written pdf.file;
+
+  log_string "\n#E: PDF.set_object";
 
   write_object pdf.file id new_rev val
 };

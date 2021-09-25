@@ -94,7 +94,7 @@ value bitmap_to_type3_glyph state fm g = do
 
 value font_encoding fm encoding = do
 {
-  let rec get_name_list i list = do
+ let rec get_name_list i list = do
   {
     if i < 0 then
       list
@@ -160,6 +160,8 @@ value write_cmap stream fm font_name encoding = do
 
 value new_type3_font state font_name fm encoding = do
 {
+  log_string "\n#E: New Font [Type 3]";
+
   let scale = pt_to_bp (num_one // fm.at_size);
 
   let width_array = Array.map
@@ -223,12 +225,17 @@ value new_type3_font state font_name fm encoding = do
 
 value new_type1_font state font_name fm encoding = do
 {
+  log_string "\n#E: New Font [Type 1]: ";
+  log_string font_name;
+  log_string ".";
+
   let scale x = float_of_num (x */ num_of_int 1000 // fm.at_size);
   let is_cff  = match fm.font_type with
   [ OpenTypeCFF -> True
   | PostScript  -> False
   | _           -> assert False
   ];
+
 
   let width_array = Array.map
     (fun n -> do
@@ -237,6 +244,8 @@ value new_type1_font state font_name fm encoding = do
         PDF.Float (scale gm.gm_width)
       })
     encoding;
+
+  log_string "\n#E: New Font: Stage 0-0.";
 
   let (max_width, max_height, max_depth) =
     Array.fold_left
@@ -255,11 +264,19 @@ value new_type1_font state font_name fm encoding = do
   let fd   = PDF.alloc_object state.pdf;
   let obj  = PDF.alloc_object state.pdf;
 
+  log_string "\n#E: New Font: Stage 0-1.";
+
   let cmap_data = IO.make_buffer_stream 0x1000;
+
+  log_string "\n#E: New Font: Stage 0-2.";
 
   write_cmap cmap_data fm font_name encoding;
 
+  log_string "\n#E: New Font: Stage 0-3.";
+
   PDF.set_object state.pdf cmap (PDF.Stream [] (IO.coerce_ir cmap_data));
+
+  log_string "\n#E: New Font: Stage 0-4.";
 
   if is_cff then do
   {
@@ -267,8 +284,16 @@ value new_type1_font state font_name fm encoding = do
     let cff       = OpenType.get_cff font;
     let font_data = IO.from_string cff;
 
-    PDF.set_object state.pdf ff
-      (PDF.Stream [("Subtype", PDF.Symbol "Type1C")] (IO.coerce_ir font_data))
+    log_string "\n#E: CFF: ";
+    log_string fm.file_name;
+    log_string ".";
+
+    let x = PDF.set_object state.pdf ff
+      (PDF.Stream [("Subtype", PDF.Symbol "Type1C")] (IO.coerce_ir font_data));
+
+    log_string "\n#E: New Font: Stage 0-5.";
+
+    x
   }
   else do
   {
@@ -277,6 +302,8 @@ value new_type1_font state font_name fm encoding = do
                                fm.file_name
                                (IO.coerce_or font_data);
 
+    log_string "\n#E: New Font: Stage 0-6.";
+
     PDF.set_object state.pdf ff
       (PDF.Stream
         [("Length1", PDF.Int len1);
@@ -284,6 +311,8 @@ value new_type1_font state font_name fm encoding = do
          ("Length3", PDF.Int len3)]
         (IO.coerce_ir font_data))
   };
+
+  log_string "\n#E: New Font: Stage 1.";
 
   PDF.set_object state.pdf fd
     (PDF.Dictionary
@@ -306,6 +335,8 @@ value new_type1_font state font_name fm encoding = do
           "FontFile",      PDF.Reference ff 0)
       ]);
 
+  log_string "\n#E: New Font: Stage 2.";
+
   PDF.set_object state.pdf obj
     (PDF.Dictionary
       [
@@ -320,11 +351,15 @@ value new_type1_font state font_name fm encoding = do
         ("FontDescriptor", PDF.Reference fd 0)
       ]);
 
+  log_string "\n#E: [Type 1]: done.";
+
   obj
 };
 
 value new_truetype_font state font_name fm encoding = do
 {
+  log_string "\n#E: New Font [True Type]";
+
   let scale x = float_of_num (x */ num_of_int 1000 // fm.at_size);
 
   let width_array = Array.map
@@ -404,6 +439,8 @@ value new_truetype_font state font_name fm encoding = do
 
 value new_font state font = do
 {
+  log_string "\n#E: New Font";
+
   let n  = List.length state.fonts;
   let fd =
     {
@@ -420,6 +457,7 @@ value new_font state font = do
 
 value make_font_obj state font_number font_def = do
 {
+  log_string "\n#E: Make Font Object";
   iter 0 []
 
   where rec iter i objs = do
@@ -458,6 +496,7 @@ value make_font_obj state font_number font_def = do
 
 value get_glyph_index font_def char = do
 {
+  log_string "\n#E: Get Glyph Index";
   let i = font_def.glyph_map.(char - font_def.first_glyph_index);
 
   if i >= 0 then
@@ -472,6 +511,10 @@ value get_glyph_index font_def char = do
 
 value load_font state font char = do
 {
+  log_string "\n#E: Load Font ";
+  log_string font.name;
+  log_string ".";
+
   find 0 state.fonts
 
   where rec find i fonts = match fonts with

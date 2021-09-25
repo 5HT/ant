@@ -60,7 +60,7 @@ value peek_char cs off = do
   chr
 };
 
-value peek_string cs off len = do
+value rec peek_string cs off len = do
 {
   let pos = io_pos cs;
 
@@ -320,7 +320,7 @@ value in_channel_read_char ic eof = do
 
 value in_channel_read_string ic eof len = do
 {
-  let buf = Bytes.create len; (* String.create *)
+  let buf = String.create len;
 
   iter 0 len
 
@@ -329,11 +329,11 @@ value in_channel_read_string ic eof len = do
     let read = input ic buf off len;
 
     if read = len then
-      buf
+      (Bytes.to_string buf)
     else if read = 0 then do
     {
       !eof := True;
-      Bytes.empty
+      ""
     }
     else
       iter (off + read) (len - read)
@@ -348,7 +348,7 @@ value make_in_stream filename = do
   io_make_read
     (fun ()  -> close_in ic)
     (fun ()  -> in_channel_read_char ic eof)
-    (fun len -> Bytes.to_string (in_channel_read_string ic eof len))
+    (fun len -> in_channel_read_string ic eof len)
     (fun ()  -> !eof)
 };
 
@@ -360,7 +360,7 @@ value make_rand_in_stream filename = do
   io_make_read_seek
     (fun ()  -> close_in ic)
     (fun ()  -> in_channel_read_char ic eof)
-    (fun len -> Bytes.to_string (in_channel_read_string ic eof len))
+    (fun len -> in_channel_read_string ic eof len)
     (fun ()  -> !eof)
     (fun ()  -> in_channel_length ic)
     (fun ()  -> pos_in ic)
@@ -396,8 +396,8 @@ value make_buffer_stream buffer_size = do
 {
   let buf_size = power_of_two (min buffer_size Sys.max_string_length);
 
-  let buffer = ref [| Bytes.create buf_size |];
-  let size   = ref 0;
+  let buffer = ref [| String.create buf_size |];
+  let lsize   = ref 0;
   let pos    = ref 0;
 
   let resize_buffer len = do
@@ -407,7 +407,7 @@ value make_buffer_stream buffer_size = do
                    if i < Array.length !buffer then
                      !buffer.(i)
                    else
-                     Bytes.create buf_size)
+                     String.create buf_size)
   };
 
   (* doubles the size of the buffer array *)
@@ -430,30 +430,29 @@ value make_buffer_stream buffer_size = do
     }
   };
 
-  let get_buffer_pos pos =
-    pos land (buf_size - 1);
+  let get_buffer_pos pos = pos land (buf_size - 1);
 
   (* returns the offset within a buffer of the given position *)
 
   let get_char pos = (Bytes.to_string (get_buffer pos)).[get_buffer_pos pos];
-
-  let set_char pos chr = do
-  {
-    Bytes.set (get_buffer pos) (get_buffer_pos pos) chr
-  };
+  let set_char pos chr = (get_buffer pos).[get_buffer_pos pos] := chr;
 
   let seek new_pos = do
   {
+    print_string "\nseek ";
+    print_int new_pos;
+    print_string ".";
+
     if new_pos < 0 then
       !pos := 0
-    else if new_pos >= !size then
-      !pos := !size
+    else if new_pos >= !lsize then
+      !pos := !lsize
     else
       !pos := new_pos
   };
   let read_char () = do
   {
-    if !pos >= !size then
+    if !pos >= !lsize then
       '\000'
     else do
     {
@@ -464,29 +463,38 @@ value make_buffer_stream buffer_size = do
   };
   let rec read_string len = do
   {
-    if !pos + len > !size then
-      read_string (!size - !pos)
+    if !pos + len > !lsize then
+      read_string (!lsize - !pos)
     else do
     {
-      let str = Bytes.create len;
+      let str = String.create len;
+
 
       for i = 0 to len - 1 do
       {
-        Bytes.set str i (read_char())
+        str.[i] := read_char ()
       };
+
+      print_string "\nread_string ";
+      print_int !pos;
+      print_string ".";
 
       Bytes.to_string str
     }
   };
   let write_char chr = do
   {
-    if !pos >= !size then
-      !size := !pos + 1
+    if !pos >= !lsize then
+      !lsize := !pos + 1
     else ();
 
     set_char !pos chr;
 
     !pos := !pos + 1
+  };
+  let get_size () = do
+  {
+    !lsize
   };
   let write_string str = do
   {
@@ -500,11 +508,11 @@ value make_buffer_stream buffer_size = do
     (fun ()  -> ())
     read_char
     read_string
-    (fun ()  -> (!pos = !size))
+    (fun ()  -> (!pos = !lsize))
     write_char
     write_string
-    (fun ()  -> !size)
-    (fun ()  -> !size)
+    get_size
+    get_size
     (fun ()  -> !pos)
     seek
 };
@@ -557,7 +565,7 @@ value consume_stream is f = do
 {
   while not (io_eof is) do
   {
-    f (io_read_string is 0x1000)
+    f (io_read_string is 0x100000)
   }
 };
 
@@ -579,7 +587,7 @@ value produce_stream os f = do
 
 value append_channel os ic = do
 {
-  let buffer = Bytes.create 0x1000;
+  let buffer = String.create 0x1000;
 
   let read () = do
   {
@@ -664,24 +672,28 @@ value to_buffer is = do
 
 value compress cs level = do
 {
-  let buffer_size = min (io_size cs) 0x10000;
-  let new_cs      = make_buffer_stream buffer_size;
+  let buffer_size = io_size cs; (* min (io_size cs) 0x1000000; *)
+  let new_cs      = make_buffer_stream (buffer_size * 2);
   let pos         = pos cs;
 
+  print_string "\n#E: compress.";
+
   seek cs 0;
+  seek new_cs 0;
 
   let zs = Zlib.deflate_init buffer_size level;
 
-  iter 0
-
-  where rec iter i = do
+  let rec iter i = do
   {
     let str = Zlib.get_output zs;
 
     if str <> "" then do
     {
-      write_string new_cs str;
-      iter i
+       write_string new_cs str;
+
+       print_string "\n#E: new_cs 1";
+
+       iter i
     }
     else do
     {
@@ -689,13 +701,20 @@ value compress cs level = do
       {
         if Zlib.avail_input zs = 0 then do
         {
-          Zlib.set_input zs (read_string cs buffer_size);
+
+          let xss = (read_string cs buffer_size);
+
+          print_string "\n#E: read cs";
+
+          Zlib.set_input zs xss;
 
           iter (i+1)
         }
         else do
         {
           Zlib.deflate zs Zlib.no_flush;
+
+          print_string "\n#E: no flush";
 
           iter i
         }
@@ -708,19 +727,36 @@ value compress cs level = do
 
         if str <> "" then do
         {
+
           write_string new_cs str;
+
+          print_string "\n#E: new_cs 2";
+
           iter i
         }
         else do
         {
           Zlib.deflate_end zs;
-          seek new_cs 0;
+          write_string new_cs str;
+
+          print_string "\n#E: zlib.output = ";
+          print_int (String.length str);
+
+          print_string "\n#E: sizes {";
+          print_int (io_size cs);
+          print_string ",";
+          print_int (io_size new_cs);
+          print_string "} done.";
           seek cs pos;
+
           io_coerce_ir new_cs
         }
       }
     }
-  }
+  };
+
+  iter 0
+
 };
 
 value uncompress cs = do
