@@ -13,6 +13,7 @@ features for typesetting. For more information read the [MANUAL.PDF](https://git
 * Color and Graphics
 * Hyphenation System
 * ML-like typesetting language
+* Best suited for academic papers
 
 ## Building
 
